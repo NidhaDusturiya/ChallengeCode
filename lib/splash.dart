@@ -51,7 +51,8 @@ class _HomePageState extends State<HomePage>
 
   Future<void> _playLevelMusic() async {
     await _audioPlayer.setReleaseMode(ReleaseMode.loop);
-    await _audioPlayer.play(AssetSource('audio/sound2.mp3'));
+    await _audioPlayer.setVolume(1.0);
+    await _audioPlayer.play(AssetSource('audio/beautiful-night-223619.mp3'));
   }
 
 
