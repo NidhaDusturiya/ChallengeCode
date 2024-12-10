@@ -222,7 +222,7 @@ class Quiz{
       ],
     },
     {
-      //12
+
       'code': 'teks = "python"\nprint(teks.upper())',
       'question': 'Apa outputnya?',
       'answers':
