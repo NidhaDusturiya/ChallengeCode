@@ -3,6 +3,7 @@ import 'package:code_challenge/dialog/logout_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:code_challenge/resource/theme.dart';
 
 class levelPage extends StatefulWidget {
   const levelPage({super.key});
@@ -138,7 +139,7 @@ class _levelPageState extends State<levelPage> {
                             debugPrint('Level ${index + 1} clicked');
                           },
                           style: ElevatedButton.styleFrom(
-                            primary: const Color(0xFF1CD1A1),
+                            backgroundColor: level_button,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(15),
                             ),

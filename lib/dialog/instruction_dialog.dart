@@ -1,3 +1,4 @@
+import 'package:code_challenge/resource/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -58,7 +59,7 @@ class InstructionDialog extends StatelessWidget {
                   onPressed();
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: Color(0xff3F3E52),
+                  backgroundColor: hitam_instruction,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
