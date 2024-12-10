@@ -41,7 +41,7 @@ class _HomePageState extends State<HomePage>
   }
    
     Future<void> _playSplashmusic() async {
-    await _audioPlayer.setReleaseMode(ReleaseMode.loop); // Ulang otomatis
+    await _audioPlayer.setReleaseMode(ReleaseMode.loop);
     await _audioPlayer.play(AssetSource('audio/splash.mp3'));
   }
 
@@ -49,11 +49,11 @@ class _HomePageState extends State<HomePage>
     await _audioPlayer.stop();
   }
 
-  Future<void> _playLevelMusic() async {
-    await _audioPlayer.setReleaseMode(ReleaseMode.loop);
-    await _audioPlayer.setVolume(1.0);
-    await _audioPlayer.play(AssetSource('audio/beautiful-night-223619.mp3'));
-  }
+  // Future<void> _playLevelMusic() async {
+  //   await _audioPlayer.setReleaseMode(ReleaseMode.loop);
+  //   await _audioPlayer.setVolume(1.0);
+  //   await _audioPlayer.play(AssetSource('audio/beautiful-night-223619.mp3'));
+  // }
 
 
   Future<void> _resetPortraitMode() async {
@@ -117,7 +117,7 @@ class _HomePageState extends State<HomePage>
                 ElevatedButton(
                   onPressed: () async {
                     await _stopSplashMusic();
-                    await _playLevelMusic();
+                    // await _playLevelMusic();
                     await Navigator.push(
                       context,
                       MaterialPageRoute(

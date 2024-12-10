@@ -24,6 +24,13 @@ class _LevelPageState extends State<levelPage> {
     _setLandscapeMode();
     _audioPlayer = AudioPlayer();
     _checkFirstTime();
+    _playLevelMusic();
+  }
+
+    Future<void> _playLevelMusic() async {
+    await _audioPlayer.setReleaseMode(ReleaseMode.loop);
+    await _audioPlayer.setVolume(1.0);
+    await _audioPlayer.play(AssetSource('audio/beautiful-night-223619.mp3'));
   }
 
   Future<void> _checkFirstTime() async {
@@ -37,7 +44,6 @@ class _LevelPageState extends State<levelPage> {
     });
   }
 
-  // Dialog untuk aturan permainan
   Future<void> _showInstructionDialog() async {
     showDialog(
       context: context,
@@ -55,7 +61,6 @@ class _LevelPageState extends State<levelPage> {
     prefs.setBool('isFirstTime', false);
   }
 
-  // Method untuk tampilkan instruksi lagi
   void _showInstructionAgain() async {
     _showInstructionDialog();
     await _audioPlayer.play(AssetSource('audio/select_Level.wav'));
@@ -66,6 +71,10 @@ class _LevelPageState extends State<levelPage> {
       DeviceOrientation.landscapeRight,
       DeviceOrientation.landscapeLeft,
     ]);
+  }
+
+  Future<void> _stopSplashMusic() async {
+    await _audioPlayer.stop();
   }
 
   // Future<void> _resetPortraitMode() async {
@@ -140,7 +149,9 @@ class _LevelPageState extends State<levelPage> {
                       itemCount: 15,
                       itemBuilder: (context, index) {
                         return ElevatedButton(
-                          onPressed: () {
+                          onPressed: () async {
+                            await _audioPlayer.play(AssetSource('audio/select_Level.wav'));
+                            _stopSplashMusic;
                             debugPrint('Level ${index + 1} clicked');
                             Navigator.pushReplacement(
                               context,

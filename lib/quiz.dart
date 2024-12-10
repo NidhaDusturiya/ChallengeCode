@@ -9,22 +9,20 @@ class LandscapeQuizScreen extends StatefulWidget {
 }
 
 class _LandscapeQuizScreenState extends State<LandscapeQuizScreen> {
-  int stars = 0; // Bintang yang diperoleh
-  int elapsedTime = 0; // Waktu yang dihabiskan
+  int stars = 0;
+  int elapsedTime = 0;
   bool isAnswered = false;
 
-  // Simulasi waktu (gunakan timer pada implementasi nyata)
   void startQuiz() async {
     await Future.delayed(Duration(seconds: 1), () {
       setState(() {
-        elapsedTime = 4; // Ubah sesuai waktu yang dihabiskan
+        elapsedTime = 4;
       });
     });
   }
 
   void checkAnswer(bool isCorrect) {
     if (isCorrect) {
-      // Logika jumlah bintang berdasarkan waktu
       if (elapsedTime <= 5) {
         stars = 3;
       } else if (elapsedTime <= 10) {
@@ -35,7 +33,6 @@ class _LandscapeQuizScreenState extends State<LandscapeQuizScreen> {
       setState(() {
         isAnswered = true;
       });
-      // Tampilkan dialog
       showResultDialog();
     }
   }
@@ -104,7 +101,6 @@ class _LandscapeQuizScreenState extends State<LandscapeQuizScreen> {
                     IconButton(
                       onPressed: () {
                         Navigator.pop(context);
-                        // Logic untuk ke soal berikutnya
                       },
                       icon: Icon(Icons.arrow_forward, color: Colors.white),
                     ),
@@ -142,7 +138,6 @@ class _LandscapeQuizScreenState extends State<LandscapeQuizScreen> {
 
   @override
   void dispose() {
-    // Reset orientasi ke portrait saat keluar dari halaman ini
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
@@ -166,7 +161,6 @@ class _LandscapeQuizScreenState extends State<LandscapeQuizScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Bagian atas (level, waktu, bintang)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Row(
@@ -231,12 +225,11 @@ class _LandscapeQuizScreenState extends State<LandscapeQuizScreen> {
                   ),
                 ),
                 SizedBox(height: 40),
-                // Bagian pilihan jawaban
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     ElevatedButton(
-                      onPressed: () => checkAnswer(true), // Jawaban benar
+                      onPressed: () => checkAnswer(true),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.cyan,
                         shape: RoundedRectangleBorder(
@@ -256,7 +249,7 @@ class _LandscapeQuizScreenState extends State<LandscapeQuizScreen> {
                       ),
                     ),
                     ElevatedButton(
-                      onPressed: () => checkAnswer(false), // Jawaban salah
+                      onPressed: () => checkAnswer(false),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.cyan,
                         shape: RoundedRectangleBorder(
@@ -305,14 +298,13 @@ class _LandscapeQuizScreenState extends State<LandscapeQuizScreen> {
             left: 10,
             child: IconButton(
               onPressed: () {
-                // Aksi untuk tombol "arrow back"
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const levelPage()),
                 );
               },
               icon: Image.asset(
-                'assets/images/tombol_back.png', // Ganti dengan path gambar Anda
+                'assets/images/tombol_back.png',
                 width: 24,
                 height: 24,
               ),
@@ -326,7 +318,6 @@ class _LandscapeQuizScreenState extends State<LandscapeQuizScreen> {
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  // Set orientasi aplikasi ke landscape saat aplikasi dijalankan
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.landscapeLeft,
     DeviceOrientation.landscapeRight,
