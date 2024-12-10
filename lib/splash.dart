@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:code_challenge/level.dart';
@@ -13,11 +14,14 @@ class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
+  late final AudioPlayer _audioPlayer;
 
   @override
   void initState() {
     super.initState();
     _setLandscapeMode();
+    _audioPlayer = AudioPlayer();
+    _playSplashmusic();
 
     _controller = AnimationController(
       duration: const Duration(seconds: 2),
@@ -26,8 +30,7 @@ class _HomePageState extends State<HomePage>
 
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0)
         .animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
-
-    _controller.forward(); // Mulai animasi
+    _controller.forward(); 
   }
 
   Future<void> _setLandscapeMode() async {
@@ -36,6 +39,21 @@ class _HomePageState extends State<HomePage>
       DeviceOrientation.landscapeLeft,
     ]);
   }
+   
+    Future<void> _playSplashmusic() async {
+    await _audioPlayer.setReleaseMode(ReleaseMode.loop); // Ulang otomatis
+    await _audioPlayer.play(AssetSource('audio/splash.mp3'));
+  }
+
+  Future<void> _stopSplashMusic() async {
+    await _audioPlayer.stop();
+  }
+
+  Future<void> _playLevelMusic() async {
+    await _audioPlayer.setReleaseMode(ReleaseMode.loop);
+    await _audioPlayer.play(AssetSource('audio/sound2.mp3'));
+  }
+
 
   Future<void> _resetPortraitMode() async {
     await SystemChrome.setPreferredOrientations([
@@ -97,6 +115,8 @@ class _HomePageState extends State<HomePage>
                 const SizedBox(height: 80), // Jarak antara teks dan tombol
                 ElevatedButton(
                   onPressed: () async {
+                    await _stopSplashMusic();
+                    await _playLevelMusic();
                     await Navigator.push(
                       context,
                       MaterialPageRoute(
