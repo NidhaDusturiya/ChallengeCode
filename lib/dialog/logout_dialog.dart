@@ -68,7 +68,7 @@ class logout_dialog extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white, // Warna teks
+                      color: Colors.white, 
                     ),
                   ),
                 ),

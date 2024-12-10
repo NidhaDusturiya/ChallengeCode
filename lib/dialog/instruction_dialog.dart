@@ -1,16 +1,21 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:code_challenge/resource/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class InstructionDialog extends StatelessWidget {
   final VoidCallback onPressed;
+  final AudioPlayer audioPlayer;
 
-  const InstructionDialog({super.key, required this.onPressed});
+  const InstructionDialog({super.key, required this.onPressed, required this.audioPlayer});
 
   Future<void> _setFirstTime() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setBool('isFirstTime', false);
+    await audioPlayer.play(AssetSource('audio/select_Level.wav'));
   }
+
+  
 
   @override
   Widget build(BuildContext context) {

@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:code_challenge/dialog/instruction_dialog.dart';
 import 'package:code_challenge/dialog/logout_dialog.dart';
 import 'package:flutter/material.dart';
@@ -9,16 +10,18 @@ class levelPage extends StatefulWidget {
   const levelPage({super.key});
 
   @override
-  _levelPageState createState() => _levelPageState();
+  _LevelPageState createState() => _LevelPageState();
 }
 
-class _levelPageState extends State<levelPage> {
+class _LevelPageState extends State<levelPage> {
   bool _isFirstTime = true;
+  late final AudioPlayer _audioPlayer;
 
   @override
   void initState() {
     super.initState();
     _setLandscapeMode();
+    _audioPlayer = AudioPlayer();
     _checkFirstTime();
   }
 
@@ -33,13 +36,14 @@ class _levelPageState extends State<levelPage> {
     });
   }
 
-  //dialog aturan permainan
+  // Dialog untuk aturan permainan
   Future<void> _showInstructionDialog() async {
     showDialog(
       context: context,
-      builder: (BuildContext contex) {
+      builder: (BuildContext context) {
         return InstructionDialog(
           onPressed: _setFirstTime,
+          audioPlayer: _audioPlayer,
         );
       },
     );
@@ -50,12 +54,13 @@ class _levelPageState extends State<levelPage> {
     prefs.setBool('isFirstTime', false);
   }
 
-  void _showInstructionAgain() {
+  // Method untuk tampilkan instruksi lagi
+  void _showInstructionAgain() async {
     _showInstructionDialog();
+    await _audioPlayer.play(AssetSource('audio/select_Level.wav'));
   }
 
   Future<void> _setLandscapeMode() async {
-    //kode landscape
     await SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeRight,
       DeviceOrientation.landscapeLeft,
@@ -63,7 +68,6 @@ class _levelPageState extends State<levelPage> {
   }
 
   Future<void> _resetPortraitMode() async {
-    // Kembalikan ke mode portrait sebelum keluar
     await SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
@@ -74,22 +78,23 @@ class _levelPageState extends State<levelPage> {
   void dispose() {
     _resetPortraitMode();
     super.dispose();
+    _audioPlayer.dispose();
   }
 
-  //perintah keluar
+  
   Future<bool> _showExitConfirmationDialog() async {
     return await showDialog(
-          context: context,
-          builder: (context) => const logout_dialog(),
-        ) ??
-        false;
+      context: context,
+      builder: (context) => const logout_dialog(),
+    ) ?? false;
   }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        return await _showExitConfirmationDialog();
+        _audioPlayer.play(AssetSource('audio/select_Level.wav'));
+        return await _showExitConfirmationDialog();  
       },
       child: Scaffold(
         appBar: AppBar(
@@ -124,8 +129,7 @@ class _levelPageState extends State<levelPage> {
                   const SizedBox(height: 15),
                   Expanded(
                     child: GridView.builder(
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 5,
                         crossAxisSpacing: 20,
                         mainAxisSpacing: 20,
