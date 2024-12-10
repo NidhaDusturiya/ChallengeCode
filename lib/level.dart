@@ -1,4 +1,3 @@
-import 'package:code_challenge/splash.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -13,8 +12,7 @@ class _levelPageState extends State<levelPage> {
   @override
   void initState() {
     super.initState();
-    // Mengatur orientasi layar ke landscape saat halaman ini dimuat
-    SystemChrome.setPreferredOrientations([
+      SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeRight,
       DeviceOrientation.landscapeLeft,
     ]);
@@ -80,7 +78,7 @@ class _levelPageState extends State<levelPage> {
                           debugPrint('Level ${index + 1} clicked');
                         },
                         style: ElevatedButton.styleFrom(
-                          primary: const Color(0xFF1CD1A1), // Warna tombol
+                          backgroundColor: const Color(0xFF1CD1A1), // Warna tombol
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(15),
                           ),
