@@ -1,6 +1,7 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:code_challenge/dialog/instruction_dialog.dart';
 import 'package:code_challenge/dialog/logout_dialog.dart';
+import 'package:code_challenge/quiz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -141,6 +142,13 @@ class _LevelPageState extends State<levelPage> {
                         return ElevatedButton(
                           onPressed: () {
                             debugPrint('Level ${index + 1} clicked');
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    LandscapeQuizScreen(), // Ganti NextPage dengan halaman tujuan Anda
+                              ),
+                            );
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: level_button,
