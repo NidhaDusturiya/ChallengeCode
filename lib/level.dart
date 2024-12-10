@@ -1,6 +1,8 @@
-import 'package:code_challenge/splash.dart';
+import 'package:code_challenge/dialog/instruction_dialog.dart';
+import 'package:code_challenge/dialog/logout_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class levelPage extends StatefulWidget {
   const levelPage({super.key});
@@ -10,97 +12,154 @@ class levelPage extends StatefulWidget {
 }
 
 class _levelPageState extends State<levelPage> {
+  bool _isFirstTime = true;
+
   @override
   void initState() {
     super.initState();
-    // Mengatur orientasi layar ke landscape saat halaman ini dimuat
-    SystemChrome.setPreferredOrientations([
+    _setLandscapeMode();
+    _checkFirstTime();
+  }
+
+  Future<void> _checkFirstTime() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool isFirstTime = prefs.getBool('isFirstTime') ?? true;
+    if (isFirstTime) {
+      _showInstructionDialog();
+    }
+    setState(() {
+      _isFirstTime = isFirstTime;
+    });
+  }
+
+  //dialog aturan permainan
+  Future<void> _showInstructionDialog() async {
+    showDialog(
+      context: context,
+      builder: (BuildContext contex) {
+        return InstructionDialog(
+          onPressed: _setFirstTime,
+        );
+      },
+    );
+  }
+
+  Future<void> _setFirstTime() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('isFirstTime', false);
+  }
+
+  void _showInstructionAgain() {
+    _showInstructionDialog();
+  }
+
+  Future<void> _setLandscapeMode() async {
+    //kode landscape
+    await SystemChrome.setPreferredOrientations([
       DeviceOrientation.landscapeRight,
       DeviceOrientation.landscapeLeft,
     ]);
   }
 
-  @override
-  void dispose() {
-    SystemChrome.setPreferredOrientations([
+  Future<void> _resetPortraitMode() async {
+    // Kembalikan ke mode portrait sebelum keluar
+    await SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
+  }
+
+  @override
+  void dispose() {
+    _resetPortraitMode();
     super.dispose();
+  }
+
+  //perintah keluar
+  Future<bool> _showExitConfirmationDialog() async {
+    return await showDialog(
+          context: context,
+          builder: (context) => const logout_dialog(),
+        ) ??
+        false;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color(0xFF28313B), Color(0xFF485461)],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-              ),
+    return WillPopScope(
+      onWillPop: () async {
+        return await _showExitConfirmationDialog();
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('SELESAIKAN SEMUA LEVEL!'),
+          titleTextStyle: const TextStyle(
+              color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+          backgroundColor: Color(0xFF28313B),
+          centerTitle: true,
+          automaticallyImplyLeading: false,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.help_outline),
+              onPressed: _showInstructionAgain,
+              color: Colors.white,
             ),
-          ),
-          // Back button
-          Positioned(
-            bottom: 20,
-            left: 20,
-            child: IconButton(
-              onPressed: () {},
-              icon: const Icon(
-                Icons.arrow_back,
-                color: Colors.pink,
-                size: 40,
-              ),
-            ),
-          ),
-          // Level buttons
-          Center(
-            child: Column(
-              children: [
-                // Tambahkan jarak di atas GridView
-                const SizedBox(height: 50), // Jarak dari atas
-                Expanded(
-                  child: GridView.builder(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 5,
-                      crossAxisSpacing: 20,
-                      mainAxisSpacing: 20,
-                      childAspectRatio: 2.5,
-                    ),
-                    padding: const EdgeInsets.all(20),
-                    itemCount: 15,
-                    itemBuilder: (context, index) {
-                      return ElevatedButton(
-                        onPressed: () {
-                          // Logika untuk tiap level
-                          debugPrint('Level ${index + 1} clicked');
-                        },
-                        style: ElevatedButton.styleFrom(
-                          primary: const Color(0xFF1CD1A1), // Warna tombol
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                        ),
-                        child: Text(
-                          'Level ${index + 1}',
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
+          ],
+        ),
+        body: Stack(
+          children: [
+            Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Color(0xFF28313B), Color(0xFF485461)],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
                 ),
-              ],
+              ),
             ),
-          ),
-        ],
+            Center(
+              child: Column(
+                children: [
+                  const SizedBox(height: 15),
+                  Expanded(
+                    child: GridView.builder(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 5,
+                        crossAxisSpacing: 20,
+                        mainAxisSpacing: 20,
+                        childAspectRatio: 2.5,
+                      ),
+                      padding: const EdgeInsets.all(20),
+                      itemCount: 15,
+                      itemBuilder: (context, index) {
+                        return ElevatedButton(
+                          onPressed: () {
+                            debugPrint('Level ${index + 1} clicked');
+                          },
+                          style: ElevatedButton.styleFrom(
+                            primary: const Color(0xFF1CD1A1),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                          ),
+                          child: Text(
+                            'Level ${index + 1}',
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
