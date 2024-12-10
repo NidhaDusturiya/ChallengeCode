@@ -68,16 +68,16 @@ class _LevelPageState extends State<levelPage> {
     ]);
   }
 
-  Future<void> _resetPortraitMode() async {
-    await SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
-  }
+  // Future<void> _resetPortraitMode() async {
+  //   await SystemChrome.setPreferredOrientations([
+  //     DeviceOrientation.portraitUp,
+  //     DeviceOrientation.portraitDown,
+  //   ]);
+  // }
 
   @override
   void dispose() {
-    _resetPortraitMode();
+    // _resetPortraitMode();
     super.dispose();
     _audioPlayer.dispose();
   }
