@@ -141,6 +141,7 @@ class _LandscapeQuizScreenState extends State<LandscapeQuizScreen> {
         isAnswered = true;
       });
       showResultDialog();
+      Quiz.quizLock[(widget.quizNumber+1).toString()] = false;
     } else {
       showDialog(
         context: context,

@@ -2,6 +2,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:code_challenge/dialog/instruction_dialog.dart';
 import 'package:code_challenge/dialog/logout_dialog.dart';
 import 'package:code_challenge/quiz.dart';
+import 'package:code_challenge/resource/quiz_questions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -153,16 +154,18 @@ class _LevelPageState extends State<levelPage> {
                             await _audioPlayer.play(AssetSource('audio/select_Level.wav'));
                             _stopSplashMusic;
                             debugPrint('Level ${index + 1} clicked');
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    LandscapeQuizScreen(quizNumber: index + 1),
-                              ),
-                            );
+                            if(!Quiz.quizLock[(index+1).toString()]!){
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      LandscapeQuizScreen(quizNumber: index + 1),
+                                ),
+                              );
+                            }
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: level_button,
+                            backgroundColor: (Quiz.quizLock[(index+1).toString()]!) ? Colors.red : level_button,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(15),
                             ),
