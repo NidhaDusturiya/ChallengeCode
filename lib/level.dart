@@ -157,7 +157,7 @@ class _LevelPageState extends State<levelPage> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) =>
-                                    LandscapeQuizScreen(), // Ganti NextPage dengan halaman tujuan Anda
+                                    LandscapeQuizScreen(quizNumber: index + 1),
                               ),
                             );
                           },

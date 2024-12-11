@@ -1,40 +1,53 @@
+import 'dart:async';
+
 import 'package:code_challenge/level.dart';
+import 'package:code_challenge/resource/quiz_questions.dart';
 import 'package:code_challenge/resource/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class LandscapeQuizScreen extends StatefulWidget {
+  final int quizNumber;
+
+  const LandscapeQuizScreen({super.key, required this.quizNumber});
+
   @override
   _LandscapeQuizScreenState createState() => _LandscapeQuizScreenState();
 }
 
 class _LandscapeQuizScreenState extends State<LandscapeQuizScreen> {
   int stars = 0;
-  int elapsedTime = 0;
+  int duration = 30;
   bool isAnswered = false;
+  late Timer timer;
 
-  void startQuiz() async {
-    await Future.delayed(Duration(seconds: 1), () {
-      setState(() {
-        elapsedTime = 4;
-      });
+  @override
+  void initState() {
+    super.initState();
+
+    // Start the timer
+    startTimer();
+  }
+
+  void startTimer() {
+    timer = Timer.periodic(const Duration(seconds: 1), (Timer t) {
+      if (duration > 0) {
+        setState(() {
+          duration--;
+        });
+      } else {
+        // Stop the timer when duration reaches 0
+        timer.cancel();
+      }
     });
   }
 
-  void checkAnswer(bool isCorrect) {
-    if (isCorrect) {
-      if (elapsedTime <= 5) {
-        stars = 3;
-      } else if (elapsedTime <= 10) {
-        stars = 2;
-      } else {
-        stars = 1;
-      }
-      setState(() {
-        isAnswered = true;
-      });
-      showResultDialog();
-    }
+  @override
+  void dispose() {
+    // Cancel the timer when the widget is disposed
+    timer.cancel();
+    super.dispose();
   }
 
   void showResultDialog() {
@@ -81,7 +94,7 @@ class _LandscapeQuizScreenState extends State<LandscapeQuizScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: List.generate(
                     3,
-                    (index) => Icon(
+                        (index) => Icon(
                       index < stars ? Icons.star : Icons.star_border,
                       color: index < stars ? Colors.yellow : Colors.white,
                       size: 30,
@@ -114,35 +127,67 @@ class _LandscapeQuizScreenState extends State<LandscapeQuizScreen> {
     );
   }
 
-  @override
-  void initState() {
-    super.initState();
-    startQuiz();
-
-    // Kunci orientasi layar langsung ke landscape saat halaman ini dibuka
-    // SystemChrome.setPreferredOrientations([
-    //   DeviceOrientation.landscapeLeft,
-    //   DeviceOrientation.landscapeRight,
-    // ]);
-
-    // // Menampilkan notifikasi di landscape
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     SnackBar(
-    //       content: Text('Selamat datang di mode landscape!'),
-    //       duration: Duration(seconds: 3),
-    //     ),
-    //   );
-    // });
-  }
-
-  @override
-  void dispose() {
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
-    super.dispose();
+  void checkAnswer(bool isCorrect) {
+    timer.cancel(); // Stop the timer when an answer is checked
+    if (isCorrect) {
+      if (duration > 20) {
+        stars = 3;
+      } else if (duration <= 20 && duration > 7) {
+        stars = 2;
+      } else {
+        stars = 1;
+      }
+      setState(() {
+        isAnswered = true;
+      });
+      showResultDialog();
+    } else {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            backgroundColor: Colors.transparent,
+            child: Container(
+              width: 100,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [pink_logout, hitam_instruction],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              padding: const EdgeInsets.all(20),
+              child: const Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Salah!',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'Jawaban kamu salah, ulangi soal ini kembali',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    }
   }
 
   @override
@@ -166,17 +211,17 @@ class _LandscapeQuizScreenState extends State<LandscapeQuizScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        'LEVEL 1',
-                        style: TextStyle(
+                       Text(
+                        'LEVEL ${widget.quizNumber}',
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       Text(
-                        '00:10',
-                        style: TextStyle(
+                        duration.toString(),
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -195,17 +240,11 @@ class _LandscapeQuizScreenState extends State<LandscapeQuizScreen> {
                     ],
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 5),
                 // Bagian pertanyaan
                 Container(
-                  margin: EdgeInsets.only(
-                    left: 0,
-                    right: 0,
-                    top: 0, // Menambahkan margin di atas
-                    bottom: 0, // Menambahkan margin di bawah
-                  ),
-                  padding: EdgeInsets.only(
-                    left: 150,
+                  padding: const EdgeInsets.only(
+                    left: 100,
                     right: 100,
                     top: 100, // Menambahkan padding di atas
                     bottom: 100, // Menambahkan padding di bawah
@@ -214,75 +253,97 @@ class _LandscapeQuizScreenState extends State<LandscapeQuizScreen> {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Text(
-                    'if (0 > 10) Bagaimana Outputnya',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                    textAlign: TextAlign.center,
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.only(left: 10),
+                        alignment: Alignment.centerLeft,
+                        width: MediaQuery.sizeOf(context).width / 1.5,
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.6),
+                        ),
+                        child: Text(
+                          Quiz.listQuestionAnswer[widget.quizNumber - 1]['code'],
+                          style: GoogleFonts.inconsolata(
+                            fontSize: 20,
+                            color: Colors.white,
+                          ),
+                          textAlign: TextAlign.left,
+                        ),
+                      ),
+                      Center(
+                        child: Text(
+                          Quiz.listQuestionAnswer[widget.quizNumber - 1]['question'],
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                SizedBox(height: 40),
+                const SizedBox(height: 5),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     ElevatedButton(
-                      onPressed: () => checkAnswer(true),
+                      onPressed: () => checkAnswer(Quiz.listQuestionAnswer[widget.quizNumber - 1]['answers'][0]['isCorrect']),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.cyan,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        padding: EdgeInsets.symmetric(
+                        padding: const EdgeInsets.symmetric(
                           horizontal: 20,
                           vertical: 10,
                         ),
                       ),
                       child: Text(
-                        'A. 10',
-                        style: TextStyle(
+                        Quiz.listQuestionAnswer[widget.quizNumber - 1]['answers'][0]['choice'],
+                        style: const TextStyle(
                           fontSize: 16,
                           color: Colors.black,
                         ),
                       ),
                     ),
                     ElevatedButton(
-                      onPressed: () => checkAnswer(false),
+                      onPressed: () => checkAnswer(Quiz.listQuestionAnswer[widget.quizNumber - 1]['answers'][1]['isCorrect']),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.cyan,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        padding: EdgeInsets.symmetric(
+                        padding: const EdgeInsets.symmetric(
                           horizontal: 20,
                           vertical: 10,
                         ),
                       ),
                       child: Text(
-                        'B. Salah',
-                        style: TextStyle(
+                        Quiz.listQuestionAnswer[widget.quizNumber - 1]['answers'][1]['choice'],
+                        style: const TextStyle(
                           fontSize: 16,
                           color: Colors.black,
                         ),
                       ),
                     ),
                     ElevatedButton(
-                      onPressed: () => checkAnswer(false), // Jawaban salah
+                      onPressed: () => checkAnswer(Quiz.listQuestionAnswer[widget.quizNumber - 1]['answers'][2]['isCorrect']), // Jawaban salah
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.cyan,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        padding: EdgeInsets.symmetric(
+                        padding: const EdgeInsets.symmetric(
                           horizontal: 20,
                           vertical: 10,
                         ),
                       ),
                       child: Text(
-                        'B. Tai',
-                        style: TextStyle(
+                        Quiz.listQuestionAnswer[widget.quizNumber - 1]['answers'][2]['choice'],
+                        style: const TextStyle(
                           fontSize: 16,
                           color: Colors.black,
                         ),
@@ -314,17 +375,4 @@ class _LandscapeQuizScreenState extends State<LandscapeQuizScreen> {
       ),
     );
   }
-}
-
-void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setPreferredOrientations([
-    DeviceOrientation.landscapeLeft,
-    DeviceOrientation.landscapeRight,
-  ]).then((_) {
-    runApp(MaterialApp(
-      home: LandscapeQuizScreen(),
-      debugShowCheckedModeBanner: false,
-    ));
-  });
 }

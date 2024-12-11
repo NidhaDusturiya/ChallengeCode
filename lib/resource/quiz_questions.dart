@@ -1,4 +1,5 @@
 class Quiz{
+  static const timePerQuestion = 30;
   static const List<Map<String, dynamic>> listQuestionAnswer =
   [
     {
@@ -23,7 +24,7 @@ class Quiz{
     },
     {
       //2
-      'code': 'nama = "Ali\n"print(nama)',
+      'code': 'nama = "Ali"\nprint(nama)',
       'question': 'Apa outputnya?',
       'answers':
       [
